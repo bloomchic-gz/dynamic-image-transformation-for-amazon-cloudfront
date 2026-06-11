@@ -6,6 +6,16 @@ import { ImageEdits, ImageHandlerError, QueryStringParameters, StatusCodes } fro
 export class QueryParamMapper {
   mapToBoolean = (value: string): boolean => value === "true";
 
+  private static readonly PRESETS: Record<string, ImageEdits> = {
+    thumbnail: {
+      resize: {
+        width: 400,
+        height: 400,
+        fit: "contain",
+      },
+    },
+  };
+
   private static readonly QUERY_PARAM_MAPPING: Record<
     string,
     { path: string[]; key: string; transform?: (value: string) => string | number | boolean }
@@ -34,10 +44,13 @@ export class QueryParamMapper {
       type Result = {
         [x: string]: string | number | boolean | Result;
       };
-      const result: Result = {};
+      const preset = queryParameters.preset
+        ? QueryParamMapper.PRESETS[queryParameters.preset.toLowerCase()]
+        : undefined;
+      const result: Result = preset ? structuredClone(preset) : {};
 
       Object.entries(queryParameters).forEach(([param, value]) => {
-        if (value !== undefined && QueryParamMapper.QUERY_PARAM_MAPPING[param]) {
+        if (param !== "preset" && value !== undefined && QueryParamMapper.QUERY_PARAM_MAPPING[param]) {
           const { path, key, transform } = QueryParamMapper.QUERY_PARAM_MAPPING[param];
 
           // Traverse and create nested objects as needed

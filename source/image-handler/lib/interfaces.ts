@@ -9,6 +9,7 @@ import { Headers, ImageEdits } from "./types";
 export interface QueryStringParameters {
   signature?: string;
   expires?: string;
+  preset?: string;
   format?: string;
   fit?: string;
   width?: string;

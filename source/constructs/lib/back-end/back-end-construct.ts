@@ -134,8 +134,7 @@ export class BackEnd extends Construct {
           },
           afterBundling(inputDir: string, outputDir: string): string[] {
             return [
-              `cd ${outputDir}`,
-              "rm -rf node_modules/sharp && npm install --cpu=x64 --os=linux --libc=glibc sharp", // npm 10.4.0+ --libc=glibc is needed for the platform-specific deps to be installed when cross-compiling sharp from mac to linux
+              `cd ${outputDir} && rm -rf node_modules/sharp node_modules/@img/sharp-* && npm install --no-save --package-lock=false --include=optional --cpu=x64 --os=linux --libc=glibc sharp@0.34.5`, // npm 10.4.0+ --libc=glibc is needed for the platform-specific deps to be installed when cross-compiling sharp from mac to linux
             ];
           },
         },

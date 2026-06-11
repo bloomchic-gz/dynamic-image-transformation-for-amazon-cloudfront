@@ -91,19 +91,36 @@ npm run clean:install
 overrideWarningsEnabled=false npx cdk bootstrap --profile <PROFILE_NAME>
 
 ## deploy lambda architecture stack
-overrideWarningsEnabled=false npx cdk deploy v7-Stack\
+overrideWarningsEnabled=false npx cdk deploy v7-Stack -c deploymentMode=lambda\
  --parameters DeployDemoUIParameter=Yes\
   --parameters SourceBucketsParameter=<MY_BUCKET>\
    --profile <PROFILE_NAME>
 
 ## deploy ecs architecture stack (see ./source/constructs/lib/v8/README.md)
-overrideWarningsEnabled=false npx cdk deploy v8-Stack --parameters AdminEmail=<MY_EMAIL>
+overrideWarningsEnabled=false npx cdk deploy v8-Stack -c deploymentMode=ecs --parameters AdminEmail=<MY_EMAIL>
 ```
 
 _Note:_
 - **MY_BUCKET**: name of an existing bucket or the list of comma-separated bucket names in your account
 - **PROFILE_NAME**: name of an AWS CLI profile that has appropriate credentials for deploying in your preferred region
 - **MY_EMAIL**: email for the admin user who can configure origins, transformation policies and mappings
+
+## Custom query parameter presets
+
+This fork supports a `thumbnail` query parameter preset for Lambda architecture deployments:
+
+```text
+https://<distribution-domain>/<s3-object-key>?preset=thumbnail
+```
+
+The preset expands to:
+
+```text
+width=400&height=400&fit=contain
+```
+
+Explicit resize parameters override individual preset values. For example,
+`?preset=thumbnail&width=200&fit=cover` uses a 200x400 `cover` resize.
 
 # Collection of operational metrics
 

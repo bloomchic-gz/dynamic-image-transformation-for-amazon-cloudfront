@@ -34,4 +34,23 @@ describe("parseImageEdits", () => {
     const expectedResult = { rotate: 90, resize: { width: 100 }, flip: true, flop: false };
     expect(result).toEqual(expectedResult);
   });
+
+  it("should parse thumbnail preset from query string into image edits object", () => {
+    const event: ImageHandlerEvent = {
+      queryStringParameters: {
+        preset: "thumbnail",
+      },
+    };
+
+    const imageRequest = new ImageRequest(undefined, undefined);
+    const result = imageRequest.parseQueryParamEdits(event, undefined);
+
+    expect(result).toEqual({
+      resize: {
+        width: 400,
+        height: 400,
+        fit: "contain",
+      },
+    });
+  });
 });

@@ -32,6 +32,37 @@ describe("QueryParamMapper", () => {
       });
     });
 
+    it("should map thumbnail preset to a contained 400x400 resize", () => {
+      const result = mapper.mapQueryParamsToEdits({ preset: "thumbnail" });
+      expect(result).toEqual({
+        resize: {
+          width: 400,
+          height: 400,
+          fit: "contain",
+        },
+      });
+    });
+
+    it("should allow explicit resize parameters to override preset values", () => {
+      const result = mapper.mapQueryParamsToEdits({
+        preset: "thumbnail",
+        width: "200",
+        fit: "cover",
+      });
+      expect(result).toEqual({
+        resize: {
+          width: 200,
+          height: 400,
+          fit: "cover",
+        },
+      });
+    });
+
+    it("should ignore unknown presets", () => {
+      const result = mapper.mapQueryParamsToEdits({ preset: "unknown" });
+      expect(result).toEqual({});
+    });
+
     it("should map zeroed width parameters to null", () => {
       const result = mapper.mapQueryParamsToEdits({
         width: "0",

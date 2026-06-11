@@ -31,20 +31,29 @@ const solutionVersion = VERSION ?? app.node.tryGetContext("solutionVersion");
 const solutionName = SOLUTION_NAME ?? app.node.tryGetContext("solutionName");
 const solutionId = SOLUTION_ID ?? app.node.tryGetContext("solutionId");
 const description = `(${solutionId}) - ${solutionDisplayName}. Version ${solutionVersion}`;
+const deploymentMode = app.node.tryGetContext("deploymentMode") ?? "all";
 
-new ServerlessImageHandlerStack(app, "v7-Stack", {
-  synthesizer,
-  description,
-  solutionId,
-  solutionVersion,
-  solutionName,
-});
+if (!["all", "lambda", "ecs"].includes(deploymentMode)) {
+  throw new Error(`Invalid deploymentMode: ${deploymentMode}. Expected one of: all, lambda, ecs.`);
+}
 
-const managementStackProps: ManagementStackProps = {
-  synthesizer,
-  solutionId,
-  solutionName,
-  solutionVersion,
-  description,
-};
-new ManagementStack(app, "v8-Stack", managementStackProps);
+if (deploymentMode === "all" || deploymentMode === "lambda") {
+  new ServerlessImageHandlerStack(app, "v7-Stack", {
+    synthesizer,
+    description,
+    solutionId,
+    solutionVersion,
+    solutionName,
+  });
+}
+
+if (deploymentMode === "all" || deploymentMode === "ecs") {
+  const managementStackProps: ManagementStackProps = {
+    synthesizer,
+    solutionId,
+    solutionName,
+    solutionVersion,
+    description,
+  };
+  new ManagementStack(app, "v8-Stack", managementStackProps);
+}

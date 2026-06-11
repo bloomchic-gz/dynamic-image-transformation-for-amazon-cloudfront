@@ -55,13 +55,13 @@ export class ApiGatewayArchitecture {
       originSslProtocols: [OriginSslPolicy.TLS_V1_1, OriginSslPolicy.TLS_V1_2],
     });
 
-    // Slice off the last line since CloudFront functions can't have module exports but we need to export the handler to unit test it.
+    // CloudFront functions cannot contain module exports, which are only present for unit tests.
     const inlineCloudFrontFunction: string[] = readFileSync(
       path.join(__dirname, "../../../image-handler/cloudfront-function-handlers/apig-request-modifier.js"),
       "utf-8"
     )
       .split("\n")
-      .slice(0, -1);
+      .filter((line) => !line.startsWith("module.exports"));
 
     const requestModifierFunction = new Function(scope, "ApigRequestModifierFunction", {
       functionName: `sih-apig-request-modifier-${props.uuid}`,
